@@ -48,7 +48,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'サーバーにGEMINI_API_KEYが設定されていません' });
   }
 
-  const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  const model = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
   const body = req.body || {};
 
   const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : '';
