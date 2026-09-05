@@ -122,9 +122,11 @@ instructionには大問全体の指示文、subQuestionsの各labelには"(1)"�
 }
 
 // JSON形式で返ってきた問題データをプリント用HTMLに変換
-function renderWorksheet(worksheet) {
+function renderWorksheet(worksheet, kScore, tScore) {
+    const total = Number(kScore) + Number(tScore);
     let html = `<div class="paper">`;
     html += `<div class="paper-title">${worksheet.title || ""}</div>`;
+    html += `<div class="score-info"><span>知識・技能：${kScore}点</span><span>思考・判断・表現：${tScore}点</span><span>合計：${total}点</span></div>`;
     html += `<div class="student-info"><span>組：＿＿＿＿</span><span>番号：＿＿＿＿</span><span>氏名：＿＿＿＿＿＿＿＿＿＿＿＿</span></div>`;
 
     worksheet.parts.forEach(function(part) {
@@ -172,7 +174,16 @@ generateBtn.addEventListener('click', async function() {
             return;
         }
 
-        resultArea.innerHTML = renderWorksheet(data);
+        let kScore, tScore;
+        if (yesRadio.checked) {
+            kScore = 40;
+            tScore = 60;
+        } else {
+            kScore = knowledgeScore.value;
+            tScore = thinkingScore.value;
+        }
+
+        resultArea.innerHTML = renderWorksheet(data, kScore, tScore);
         printBtn.style.display = "block";
     } catch (err) {
         resultArea.innerHTML = "<p>通信エラーが発生しました: " + err.message + "</p>";
