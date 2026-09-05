@@ -35,6 +35,12 @@ function updateTotal() {
 knowledgeScore.addEventListener('input', updateTotal);
 thinkingScore.addEventListener('input', updateTotal);
 
+// 【数式の書き方について・重要】の共通ルール(mathTemplate / buildFreePrompt 両方から参照)
+const NOTATION_RULES = `
+【数式の書き方について・重要】
+LaTeX記法は使わず、x^2（累乗）、a/b（分数）、× （掛け算）のような、プレーンテキストの日本の教科書表記にしてください。
+`;
+
 const mathTemplate = `あなたは経験豊富な日本の公立中学校数学科教員です。
 {{学年}}「{{単元名}}」の単元の定期テストを1つ作成してください。
 
@@ -67,22 +73,10 @@ const mathTemplate = `あなたは経験豊富な日本の公立中学校数学�
 - 数値は毎回変えて、既存の類題と数字がかぶらないようにする
 - 選択肢問題は記号(ア・イ・ウ…)で答えさせ、「すべて選び」と「1つ選び」を使い分ける
 - 計算問題は「途中式→答え」の形式が分かるように問題を設計する
-
-
-【レイアウト・デザイン指定】
-- A4サイズ、2段組(左カラム・右カラム)のレイアウトにする
-- 各大問は左上に算用数字を表示し、直後に問題文を続ける
-- 大問群の先頭に《知識・技能》《思考力・判断力・表現力等》の見出しを太字で挿入する
-- 計算・記述問題には、式を書き込むための空白スペース(3〜5行分)を確保する
-- 表・数直線・図形を伴う問題は、罫線で囲んだ図表エリアを問題文の下に配置する
-- ページ下部中央にページ番号を表示する
-- 全体として、余白にゆとりのあるプリント教材らしい構成にする
-
-
-【出力形式】
-- 問題文のみを出力し、解答・解説は含めない(解答が必要な場合は別途指示する)
-- LaTeXや特殊記号は使わず、日本の教科書表記に統一する
-- 大問番号は単純な算用数字で表記する`;
+${NOTATION_RULES}
+【出力について】
+- instructionには大問全体の指示文、subQuestionsの各labelには"(1)"のような番号、textには問題文だけを入れてください
+- 解答・解説は含めないでください`;
 
 const ageSelect = document.querySelector('select[name="test-age"]');
 const topicInput = document.querySelector('input[name="topic"]');
@@ -113,7 +107,9 @@ function buildFreePrompt() {
     let prompt = `${ageSelect.value}「${topicInput.value}」の数学のテストを作成してください。
 問題数は${questionCount.value}問、難易度は${difficultySelect.value}にしてください。
 出題形式は${getSelectedQuestionTypes()}を含めてください。
-知識技能の配点は${knowledgeScore.value}点、思考判断表現の配点は${thinkingScore.value}点にしてください。`;
+知識技能の配点は${knowledgeScore.value}点、思考判断表現の配点は${thinkingScore.value}点にしてください。
+${NOTATION_RULES}
+instructionには大問全体の指示文、subQuestionsの各labelには"(1)"のような番号、textには問題文だけを入れてください。`;
 
     if (exampleProblem.value.trim() !== "") {
         prompt += `\n参考にする例題: ${exampleProblem.value}`;
@@ -125,9 +121,32 @@ function buildFreePrompt() {
     return prompt;
 }
 
-// 作成ボタンとGemini呼び出し
+// JSON形式で返ってきた問題データをプリント用HTMLに変換
+function renderWorksheet(worksheet) {
+    let html = `<div class="paper">`;
+    html += `<div class="paper-title">${worksheet.title || ""}</div>`;
+    html += `<div class="student-info"><span>組：＿＿＿＿</span><span>番号：＿＿＿＿</span><span>氏名：＿＿＿＿＿＿＿＿＿＿＿＿</span></div>`;
+
+    worksheet.parts.forEach(function(part) {
+        html += `<div class="part-title">${part.partTitle}</div>`;
+        part.questions.forEach(function(q) {
+            html += `<div class="daimon">`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>`;
+            (q.subQuestions || []).forEach(function(sq) {
+                html += `<div class="subquestion"><span class="sub-label">${sq.label}</span><span class="sub-text">${sq.text}</span><div class="answer-blank"></div></div>`;
+            });
+            html += `</div>`;
+        });
+    });
+
+    html += `</div>`;
+    return html;
+}
+
+// 作成ボタンとAPI呼び出し
 const generateBtn = document.getElementById('generate-btn');
 const resultArea = document.getElementById('result-area');
+const printBtn = document.getElementById('print-btn');
 
 generateBtn.addEventListener('click', async function() {
     let prompt;
@@ -137,7 +156,8 @@ generateBtn.addEventListener('click', async function() {
         prompt = buildFreePrompt();
     }
 
-    resultArea.textContent = "生成中です。少々お待ちください...";
+    resultArea.innerHTML = "<p>生成中です。少々お待ちください...</p>";
+    printBtn.style.display = "none";
 
     try {
         const response = await fetch('/api/generate', {
@@ -148,12 +168,13 @@ generateBtn.addEventListener('click', async function() {
         const data = await response.json();
 
         if (!response.ok) {
-            resultArea.textContent = "エラー: " + data.error;
+            resultArea.innerHTML = "<p>エラー: " + data.error + "</p>";
             return;
         }
 
-        resultArea.textContent = data.text;
+        resultArea.innerHTML = renderWorksheet(data);
+        printBtn.style.display = "block";
     } catch (err) {
-        resultArea.textContent = "通信エラーが発生しました: " + err.message;
+        resultArea.innerHTML = "<p>通信エラーが発生しました: " + err.message + "</p>";
     }
 });

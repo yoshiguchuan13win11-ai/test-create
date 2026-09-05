@@ -62,3 +62,78 @@ textarea {
 #generate-btn {
     display: block;
 }
+.paper {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    line-height: 1.8;
+}
+
+.paper-title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.student-info {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.part-title {
+    font-weight: bold;
+    font-size: 17px;
+    border-bottom: 2px solid #000;
+    margin: 24px 0 12px;
+    padding-bottom: 4px;
+}
+
+.daimon {
+    margin-bottom: 18px;
+}
+
+.daimon-head {
+    font-weight: bold;
+}
+
+.daimon-number {
+    margin-right: 6px;
+}
+
+.subquestion {
+    margin: 8px 0 8px 20px;
+}
+
+.sub-label {
+    margin-right: 6px;
+}
+
+.answer-blank {
+    border-bottom: 1px solid #999;
+    height: 20px;
+    margin: 4px 0 4px 20px;
+}
+
+@media print {
+    .header,
+    .test-form,
+    #print-btn {
+        display: none;
+    }
+    .paper {
+        border: none;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+}

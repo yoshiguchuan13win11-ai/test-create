@@ -1,3 +1,43 @@
+const WORKSHEET_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    title: { type: 'STRING' },
+    parts: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          partTitle: { type: 'STRING' },
+          questions: {
+            type: 'ARRAY',
+            items: {
+              type: 'OBJECT',
+              properties: {
+                number: { type: 'NUMBER' },
+                instruction: { type: 'STRING' },
+                subQuestions: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    properties: {
+                      label: { type: 'STRING' },
+                      text: { type: 'STRING' }
+                    },
+                    required: ['label', 'text']
+                  }
+                }
+              },
+              required: ['number', 'instruction', 'subQuestions']
+            }
+          }
+        },
+        required: ['partTitle', 'questions']
+      }
+    }
+  },
+  required: ['title', 'parts']
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'POSTメソッドのみ対応しています' });
@@ -23,7 +63,12 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.8,
+            responseMimeType: 'application/json',
+            responseSchema: WORKSHEET_SCHEMA
+          }
         })
       }
     );
@@ -35,7 +80,13 @@ export default async function handler(req, res) {
     if (!text) {
       throw new Error('Geminiから有効な返答が得られませんでした');
     }
-    return res.status(200).json({ text });
+    let worksheet;
+    try {
+      worksheet = JSON.parse(text);
+    } catch (e) {
+      throw new Error('応答をJSONとして解析できませんでした');
+    }
+    return res.status(200).json(worksheet);
   } catch (err) {
     return res.status(500).json({ error: '生成中にエラーが発生しました: ' + err.message });
   }
