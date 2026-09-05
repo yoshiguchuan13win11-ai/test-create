@@ -178,3 +178,7 @@ generateBtn.addEventListener('click', async function() {
         resultArea.innerHTML = "<p>通信エラーが発生しました: " + err.message + "</p>";
     }
 });
+
+printBtn.addEventListener('click', function() {
+    window.print();
+});
