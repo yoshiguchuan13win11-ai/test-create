@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja"> 
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- タイトル変えるときはここ↓ -->
+        <title>数学テスト作成ツール</title>
+        <link rel="stylesheet" href="math.css">
+        <!-- CSSの先を変えるときはここ↑ -->
+    </head>
+    <body>
+        <header class="header">
+            <!-- ヘッダー --><!-- index.htmlに飛ぶリンク↓ -->
+            <a class="title" href="index.html">ホーム</a>
+            <ul>
+                <li><a class="math" href="math.html">数学テスト作成</a></li>
+                <li><a class="english" href="english.html">英語テスト作成</a></li>
+            </ul>
+        </header>
+        
+        <form class="test-form">
+            <h3>テストのタイトルを入力してください。</h3>
+                <input type="text" name="test-title" placeholder="テストタイトル" required>
+            <h3>対象年齢を入力してください。</h3>
+                <select name="test-age" required>
+                    <option value="">選択してください</option>
+                    <optgroup label="小学生">
+                    <option value="小学校1年生">小学校1年生</option>
+                        <option value="小学校2年生">小学校2年生</option>
+                        <option value="小学校3年生">小学校3年生</option>
+                        <option value="小学校4年生">小学校4年生</option>
+                        <option value="小学校5年生">小学校5年生</option>
+                        <option value="小学校6年生">小学校6年生</option>
+                    </optgroup>
+                    <optgroup label="中学生">
+                        <option value="中学1年生">中学1年生</option>
+                        <option value="中学2年生">中学2年生</option>
+                        <option value="中学3年生">中学3年生</option>
+                    </optgroup>
+                    <optgroup label="高校生">
+                        <option value="高校1年生">高校1年生</option>
+                        <option value="高校2年生">高校2年生</option>
+                        <option value="高校3年生">高校3年生</option>
+                    </optgroup>
+                </select>
+            <h3>出題範囲（入力可）</h3>
+                <input type="text" name="topic" list="topic-list" placeholder="出題範囲・テーマ" required>
+                <datalist id="topic-list">
+                    <option value="文字式"></option>
+                    <option value="一次方程式(比例除く)"></option>
+                    <option value="一次方程式"></option>
+                    <option value="文字式+一次方程式（比例除く）"></option>
+                    <option value="文字式＋一次方程式"></option>
+                </datalist>
+            <h3>数学テンプレートを使用しますか？</h3>
+            <label>
+                <input type="radio" name="use-template" value="yes" required> はい
+            </label>
+            <label>
+                <input type="radio" name="use-template" value="no"> いいえ
+            </label>
+            <!-- これより先はテンプレート使用時のみ表示 -->
+            <div id="extra-options" style="display: none;">
+            <h3>問題数を入力してください。</h3>
+            <input type="number" name="question-count" min="1">
+            <h3>難易度を選択してください。</h3>
+            <select name="difficulty" required>
+                <option value="">選択してください</option>
+                <option value="easy">簡単</option>
+                <option value="medium">普通</option>
+                <option value="hard">難しい</option>
+            </select>
+            <h3>出題形式を選択してください。（複数可）</h3>
+            <fieldset>
+                <label>
+                    <input type="checkbox" name="question-type" value="multiple-choice"> 選択式
+                </label>
+                <label>
+                    <input type="checkbox" name="question-type" value="fill-in-the-blank"> 穴埋め式
+                </label>
+                <label>
+                    <input type="checkbox" name="question-type" value="short-answer"> 記述式
+                </label>
+            </fieldset>
+            <h3>知識技能の点数、思考判断表現の点数を入力してください。</h3>
+            <input type="number" name="knowledge-score" min="0" placeholder="知識技能の点数">
+            <input type="number" name="thinking-score" min="0" placeholder="思考判断表現の点数">
+            <span>合計： <span id="total-score">0</span>点</span>
+            <span id="knowledge-warning" class="red" style="display: none;">この数字は範囲外です</span>
+            <span id="thinking-warning" class="red" style="display: none;">この数字は範囲外です</span>
+            <h3>例題を入力してください。（任意）</h3>
+            <textarea name="example-problem" placeholder="例題を入力してください" rows="9"></textarea>
+            <h3>追加指示を入力してください。（任意）</h3>
+            <textarea name="additional-instructions" placeholder="追加指示を入力してください" rows="9"></textarea>
+            </div>
+        </form>
+        <script src="math.js"></script>
+    </body>
+</html>
