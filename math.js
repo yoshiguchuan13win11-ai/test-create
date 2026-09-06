@@ -35,10 +35,22 @@ function updateTotal() {
 knowledgeScore.addEventListener('input', updateTotal);
 thinkingScore.addEventListener('input', updateTotal);
 
-// 【数式の書き方について・重要】の共通ルール(mathTemplate / buildFreePrompt 両方から参照)
+// 数式表記・配点・出題範囲に関する共通ルール
 const NOTATION_RULES = `
 【数式の書き方について・重要】
 LaTeX記法は使わず、x^2（累乗）、a/b（分数）、× （掛け算）のような、プレーンテキストの日本の教科書表記にしてください。
+
+【配点について・重要】
+第1部(知識・技能)全体の配点(partPoints)は60点、第2部(思考力・判断力・表現力等)全体の配点(partPoints)は40点、テスト全体の合計は100点にしてください。
+各小問(subQuestions)のpointsは、その大問のpartPointsの範囲内で、問題の難易度に応じて割り振り、大問内の小問の合計がpartPointsと一致するようにしてください。
+各subQuestionのanswerには、その問題の模範解答（簡潔な答えと、必要なら短い解き方）を必ず入れてください。
+
+【出題範囲について・重要】
+指定された単元の範囲を明確に超える内容（未習の公式や、その学年でまだ習っていない概念）は出題しないでください。
+
+【難易度の一貫性について】
+知識・技能パートには、判断・説明・理由づけを要する問題を含めず、純粋な計算・分類・穴埋めなど、機械的に答えが出せる問題のみにしてください。
+急激な難易度上昇を避け、各大問・各パートの中で段階的に難しくなるようにしてください。
 `;
 
 const mathTemplate = `あなたは経験豊富な日本の公立中学校数学科教員です。
@@ -69,14 +81,13 @@ const mathTemplate = `あなたは経験豊富な日本の公立中学校数学�
 
 
 【出題ルールと難易度】
-- 難易度は{{学年}}の定期テスト相当(基礎6割・応用4割程度)とする
+- 難易度は{{学年}}の定期テスト相当とする
 - 数値は毎回変えて、既存の類題と数字がかぶらないようにする
 - 選択肢問題は記号(ア・イ・ウ…)で答えさせ、「すべて選び」と「1つ選び」を使い分ける
 - 計算問題は「途中式→答え」の形式が分かるように問題を設計する
 ${NOTATION_RULES}
 【出力について】
-- instructionには大問全体の指示文、subQuestionsの各labelには"(1)"のような番号、textには問題文だけを入れてください
-- 解答・解説は含めないでください`;
+- instructionには大問全体の指示文、subQuestionsの各labelには"(1)"のような番号、textには問題文だけを入れてください`;
 
 const ageSelect = document.querySelector('select[name="test-age"]');
 const topicInput = document.querySelector('input[name="topic"]');
@@ -107,7 +118,6 @@ function buildFreePrompt() {
     let prompt = `${ageSelect.value}「${topicInput.value}」の数学のテストを作成してください。
 問題数は${questionCount.value}問、難易度は${difficultySelect.value}にしてください。
 出題形式は${getSelectedQuestionTypes()}を含めてください。
-知識技能の配点は${knowledgeScore.value}点、思考判断表現の配点は${thinkingScore.value}点にしてください。
 ${NOTATION_RULES}
 instructionには大問全体の指示文、subQuestionsの各labelには"(1)"のような番号、textには問題文だけを入れてください。`;
 
@@ -121,26 +131,100 @@ instructionには大問全体の指示文、subQuestionsの各labelには"(1)"�
     return prompt;
 }
 
-// JSON形式で返ってきた問題データをプリント用HTMLに変換
-function renderWorksheet(worksheet, kScore, tScore) {
-    const total = Number(kScore) + Number(tScore);
-    let html = `<div class="paper">`;
-    html += `<div class="paper-title">${worksheet.title || ""}</div>`;
-    html += `<div class="score-info"><span>知識・技能：${kScore}点</span><span>思考・判断・表現：${tScore}点</span><span>合計：${total}点</span></div>`;
+// 各ページ下部に付ける注意書き
+const FOOTER_HTML = `<div class="ai-footer">このテストはAI作成です。実際のテストではありません。このテストは https://test-create-theta.vercel.app/ で無料で生成できます。</div>`;
+
+// 共通のヘッダー部分(タイトル・配点・氏名欄)
+function renderPaperHead(worksheet) {
+    const kPoints = worksheet.parts[0] ? worksheet.parts[0].partPoints : "";
+    const tPoints = worksheet.parts[1] ? worksheet.parts[1].partPoints : "";
+    const total = Number(kPoints) + Number(tPoints);
+
+    let html = `<div class="paper-title">${worksheet.title || ""}</div>`;
     html += `<div class="student-info"><span>組：＿＿＿＿</span><span>番号：＿＿＿＿</span><span>氏名：＿＿＿＿＿＿＿＿＿＿＿＿</span></div>`;
+    html += `<table class="score-table">
+        <tr><th>知識・技能</th><th>思考・判断・表現</th><th>合計</th></tr>
+        <tr><td>／${kPoints}</td><td>／${tPoints}</td><td>／${total}</td></tr>
+    </table>`;
+    return html;
+}
+
+// 問題用紙(配点は表示、解答欄は空欄、模範解答は含めない)
+function renderQuestionPaper(worksheet) {
+    let html = `<div class="paper">`;
+    html += renderPaperHead(worksheet);
 
     worksheet.parts.forEach(function(part) {
-        html += `<div class="part-title">${part.partTitle}</div>`;
+        html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
         part.questions.forEach(function(q) {
             html += `<div class="daimon">`;
             html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>`;
             (q.subQuestions || []).forEach(function(sq) {
-                html += `<div class="subquestion"><span class="sub-label">${sq.label}</span><span class="sub-text">${sq.text}</span><div class="answer-blank"></div></div>`;
+                html += `<div class="subquestion">
+                    <span class="sub-label">${sq.label}</span>
+                    <span class="sub-text">${sq.text}</span>
+                    <span class="sub-points">(${sq.points}点)</span>
+                    <div class="answer-blank"></div>
+                </div>`;
             });
             html += `</div>`;
         });
     });
 
+    html += FOOTER_HTML;
+    html += `</div>`;
+    return html;
+}
+
+// 解答用紙(問題文は省略し、配点と解答欄だけを大きく取る)
+function renderAnswerSheet(worksheet) {
+    let html = `<div class="paper">`;
+    html += renderPaperHead(worksheet);
+
+    worksheet.parts.forEach(function(part) {
+        html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
+        part.questions.forEach(function(q) {
+            html += `<div class="daimon">`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span></div>`;
+            (q.subQuestions || []).forEach(function(sq) {
+                html += `<div class="subquestion">
+                    <span class="sub-label">${sq.label}</span>
+                    <span class="sub-points">(${sq.points}点)</span>
+                    <div class="answer-blank answer-blank-large"></div>
+                </div>`;
+            });
+            html += `</div>`;
+        });
+    });
+
+    html += FOOTER_HTML;
+    html += `</div>`;
+    return html;
+}
+
+// 模範解答(問題文・答えの両方を表示)
+function renderAnswerKey(worksheet) {
+    let html = `<div class="paper">`;
+    html += `<div class="paper-title">${worksheet.title || ""}（模範解答）</div>`;
+
+    worksheet.parts.forEach(function(part) {
+        html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
+        part.questions.forEach(function(q) {
+            html += `<div class="daimon">`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>`;
+            (q.subQuestions || []).forEach(function(sq) {
+                html += `<div class="subquestion">
+                    <span class="sub-label">${sq.label}</span>
+                    <span class="sub-text">${sq.text}</span>
+                    <span class="sub-points">(${sq.points}点)</span>
+                    <div class="answer-key-text">解答：${sq.answer || ""}</div>
+                </div>`;
+            });
+            html += `</div>`;
+        });
+    });
+
+    html += FOOTER_HTML;
     html += `</div>`;
     return html;
 }
@@ -148,7 +232,17 @@ function renderWorksheet(worksheet, kScore, tScore) {
 // 作成ボタンとAPI呼び出し
 const generateBtn = document.getElementById('generate-btn');
 const resultArea = document.getElementById('result-area');
-const printBtn = document.getElementById('print-btn');
+const printQuestionBtn = document.getElementById('print-question-btn');
+const printAnswerSheetBtn = document.getElementById('print-answersheet-btn');
+const printAnswerKeyBtn = document.getElementById('print-answerkey-btn');
+
+let currentWorksheet = null; // 生成結果を保存しておく変数
+
+function hideAllPrintButtons() {
+    printQuestionBtn.style.display = "none";
+    printAnswerSheetBtn.style.display = "none";
+    printAnswerKeyBtn.style.display = "none";
+}
 
 generateBtn.addEventListener('click', async function() {
     let prompt;
@@ -159,7 +253,7 @@ generateBtn.addEventListener('click', async function() {
     }
 
     resultArea.innerHTML = "<p>生成中です。少々お待ちください...</p>";
-    printBtn.style.display = "none";
+    hideAllPrintButtons();
 
     try {
         const response = await fetch('/api/generate', {
@@ -174,22 +268,27 @@ generateBtn.addEventListener('click', async function() {
             return;
         }
 
-        let kScore, tScore;
-        if (yesRadio.checked) {
-            kScore = 40;
-            tScore = 60;
-        } else {
-            kScore = knowledgeScore.value;
-            tScore = thinkingScore.value;
-        }
-
-        resultArea.innerHTML = renderWorksheet(data, kScore, tScore);
-        printBtn.style.display = "block";
+        currentWorksheet = data;
+        resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
+        printQuestionBtn.style.display = "inline-block";
+        printAnswerSheetBtn.style.display = "inline-block";
+        printAnswerKeyBtn.style.display = "inline-block";
     } catch (err) {
         resultArea.innerHTML = "<p>通信エラーが発生しました: " + err.message + "</p>";
     }
 });
 
-printBtn.addEventListener('click', function() {
+printQuestionBtn.addEventListener('click', function() {
+    resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
+    window.print();
+});
+
+printAnswerSheetBtn.addEventListener('click', function() {
+    resultArea.innerHTML = renderAnswerSheet(currentWorksheet);
+    window.print();
+});
+
+printAnswerKeyBtn.addEventListener('click', function() {
+    resultArea.innerHTML = renderAnswerKey(currentWorksheet);
     window.print();
 });

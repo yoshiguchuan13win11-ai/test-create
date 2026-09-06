@@ -8,6 +8,7 @@ const WORKSHEET_SCHEMA = {
         type: 'OBJECT',
         properties: {
           partTitle: { type: 'STRING' },
+          partPoints: { type: 'NUMBER' },
           questions: {
             type: 'ARRAY',
             items: {
@@ -21,9 +22,11 @@ const WORKSHEET_SCHEMA = {
                     type: 'OBJECT',
                     properties: {
                       label: { type: 'STRING' },
-                      text: { type: 'STRING' }
+                      text: { type: 'STRING' },
+                      points: { type: 'NUMBER' },
+                      answer: { type: 'STRING' }
                     },
-                    required: ['label', 'text']
+                    required: ['label', 'text', 'points', 'answer']
                   }
                 }
               },
@@ -31,7 +34,7 @@ const WORKSHEET_SCHEMA = {
             }
           }
         },
-        required: ['partTitle', 'questions']
+        required: ['partTitle', 'partPoints', 'questions']
       }
     }
   },

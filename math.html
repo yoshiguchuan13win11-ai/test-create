@@ -94,9 +94,13 @@
             <textarea name="additional-instructions" placeholder="追加指示を入力してください" rows="9"></textarea>
             </div>
         </form>
-            <button type="button" id="generate-btn">テストを作成する</button>
-            <div id="result-area"></div>
-            <button type="button" id="print-btn" style="display:none;">印刷する</button>
+        <button type="button" id="generate-btn">テストを作成する</button>
+        <div class="print-buttons">
+            <button type="button" id="print-question-btn" style="display:none;">問題用紙を印刷</button>
+            <button type="button" id="print-answersheet-btn" style="display:none;">解答用紙を印刷</button>
+            <button type="button" id="print-answerkey-btn" style="display:none;">模範解答を印刷</button>
+        </div>
+        <div id="result-area"></div>
         <script src="math.js"></script>
     </body>
 </html>
