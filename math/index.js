@@ -38,7 +38,8 @@ thinkingScore.addEventListener('input', updateTotal);
 // 数式表記・配点・出題範囲に関する共通ルール
 const NOTATION_RULES = `
 【数式の書き方について・重要】
-LaTeX記法は使わず、x^2（累乗）、a/b（分数）、× （掛け算）のような、プレーンテキストの日本の教科書表記にしてください。
+数式は、必ずLaTeX記法を使い、インライン数式は $ ... $ で囲んでください（例: $x^2$、$\\frac{a}{7}$、$\\times$）。
+分数は必ず \\frac{分子}{分母} の形で書き、a/7 のようなスラッシュ表記は使わないでください。
 
 【配点について・重要】
 第1部(知識・技能)全体の配点(partPoints)は60点、第2部(思考力・判断力・表現力等)全体の配点(partPoints)は40点、テスト全体の合計は100点にしてください。
@@ -278,6 +279,7 @@ generateBtn.addEventListener('click', async function() {
 
         currentWorksheet = data;
         resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
+        renderMathInElement(resultArea);
         printQuestionBtn.style.display = "inline-block";
         printAnswerSheetBtn.style.display = "inline-block";
         printAnswerKeyBtn.style.display = "inline-block";
@@ -288,15 +290,18 @@ generateBtn.addEventListener('click', async function() {
 
 printQuestionBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
+    renderMathInElement(resultArea);
     window.print();
 });
 
 printAnswerSheetBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderAnswerSheet(currentWorksheet);
+    renderMathInElement(resultArea);
     window.print();
 });
 
 printAnswerKeyBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderAnswerKey(currentWorksheet);
+    renderMathInElement(resultArea);
     window.print();
 });
