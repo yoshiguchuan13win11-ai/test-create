@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- タイトル変えるときはここ↓ -->
-        <title>数学テスト作成ツール</title>
+        <title>漢字テスト作成ツール</title>
         <link rel="stylesheet" href="index.css">
         <!-- CSSの先を変えるときはここ↑ -->
          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
@@ -14,10 +14,10 @@
     <body>
         <header class="header">
             <!-- ヘッダー --><!-- index.htmlに飛ぶリンク↓ -->
-            <a class="title" href="../index.html">ホーム</a>
+            <a class="title" href="../../index.html">ホーム</a>
             <ul>
-                <li><a class="math" href="index.html">数学テスト作成</a></li>
-                <li><a class="japanese" href="../japanese/index.html">国語テスト作成</a></li>
+                <li><a class="math" href="../../math/index.html">数学テスト作成</a></li>
+                <li><a class="japanese" href="../index.html">国語テスト作成</a></li>
             </ul>
         </header>
         
@@ -46,56 +46,67 @@
                         <option value="高校3年生">高校3年生</option>
                     </optgroup>
                 </select>
-            <h3>出題範囲（入力可）</h3>
-                <input type="text" name="topic" list="topic-list" placeholder="出題範囲・テーマ" required>
-                <datalist id="topic-list">
-                    <option value="文字式"></option>
-                    <option value="一次方程式(比例除く)"></option>
-                    <option value="一次方程式"></option>
-                    <option value="文字式+一次方程式（比例除く）"></option>
-                    <option value="文字式＋一次方程式"></option>
-                </datalist>
-            <h3>数学テンプレートを使用しますか？</h3>
-            <label>
-                <input type="radio" name="use-template" value="yes" required> はい
-            </label>
-            <label>
-                <input type="radio" name="use-template" value="no"> いいえ
-            </label>
-            <!-- これより先はテンプレート使用時のみ表示 -->
-            <div id="extra-options" style="display: none;">
-            <h3>問題数を入力してください。</h3>
-            <input type="number" name="question-count" min="1">
-            <h3>難易度を選択してください。</h3>
-            <select name="difficulty" required>
-                <option value="">選択してください</option>
-                <option value="easy">簡単</option>
-                <option value="medium">普通</option>
-                <option value="hard">難しい</option>
-            </select>
+            <h3>出題範囲</h3>
+            <fieldset>
+                <label>
+                    <input type="checkbox" name="unit" value="ryu"> 竜
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="kanji1"> 漢字を身につけよう➀
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="pengin"> ペンギンの防寒着
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="kujira"> クジラの飲み水
+                </label>
+                <label>
+                     <input type="checkbox" name="unit" value="katuyoutotegaki"> 活字と手書き文字
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="kanji2"> 漢字を身につけよう➁
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="kiki"> 空中ブランコ乗りのキキ
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="hagaki"> 字のない葉書
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="naritatitobusyu"> 成り立ちと部首 本を読むことのおもしろさ
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="kanji3"> 漢字を身につけよう➂
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="1000enkati"> 一〇〇〇円の価値を考える
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="kanji4"> 漢字を身につけよう➃
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="taketori"> 竹取物語
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="mujun"> 故事成語ー矛盾
+                </label>
+            </fieldset>
+  
             <h3>出題形式を選択してください。（複数可）</h3>
             <fieldset>
                 <label>
-                    <input type="checkbox" name="question-type" value="multiple-choice"> 選択式
+                    <input type="checkbox" name="question-type" value="multiple-choice"> 読み
                 </label>
                 <label>
-                    <input type="checkbox" name="question-type" value="fill-in-the-blank"> 穴埋め式
-                </label>
-                <label>
-                    <input type="checkbox" name="question-type" value="short-answer"> 記述式
+                    <input type="checkbox" name="question-type" value="fill-in-the-blank"> 書き
                 </label>
             </fieldset>
-            <h3>知識技能の点数、思考判断表現の点数を入力してください。</h3>
-            <input type="number" name="knowledge-score" min="0" placeholder="知識技能の点数">
-            <input type="number" name="thinking-score" min="0" placeholder="思考判断表現の点数">
-            <span>合計： <span id="total-score">0</span>点</span>
-            <span id="knowledge-warning" class="red" style="display: none;">この数字は範囲外です</span>
-            <span id="thinking-warning" class="red" style="display: none;">この数字は範囲外です</span>
-            <h3>例題を入力してください。（任意）</h3>
-            <textarea name="example-problem" placeholder="例題を入力してください" rows="9"></textarea>
+
+            <h3>問題数を入力してください。</h3>
+            <input type="number" name="question-count" min="1">
+
             <h3>追加指示を入力してください。（任意）</h3>
             <textarea name="additional-instructions" placeholder="追加指示を入力してください" rows="9"></textarea>
-            </div>
         </form>
         <button type="button" id="generate-btn">テストを作成する</button>
         <div class="print-buttons">
