@@ -238,6 +238,16 @@ function renderAnswerKey(worksheet) {
     return html;
 }
 
+// 数式(KaTeX)をresultArea内でレンダリングする
+function renderMath() {
+    renderMathInElement(resultArea, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false}
+        ]
+    });
+}
+
 // 作成ボタンとAPI呼び出し
 const generateBtn = document.getElementById('generate-btn');
 const resultArea = document.getElementById('result-area');
@@ -279,7 +289,7 @@ generateBtn.addEventListener('click', async function() {
 
         currentWorksheet = data;
         resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
-        renderMathInElement(resultArea);
+        renderMath();
         printQuestionBtn.style.display = "inline-block";
         printAnswerSheetBtn.style.display = "inline-block";
         printAnswerKeyBtn.style.display = "inline-block";
@@ -290,18 +300,18 @@ generateBtn.addEventListener('click', async function() {
 
 printQuestionBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
-    renderMathInElement(resultArea);
+    renderMath();
     window.print();
 });
 
 printAnswerSheetBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderAnswerSheet(currentWorksheet);
-    renderMathInElement(resultArea);
+    renderMath();
     window.print();
 });
 
 printAnswerKeyBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderAnswerKey(currentWorksheet);
-    renderMathInElement(resultArea);
+    renderMath();
     window.print();
 });
