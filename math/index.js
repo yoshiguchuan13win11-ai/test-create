@@ -264,7 +264,7 @@ generateBtn.addEventListener('click', async function() {
     hideAllPrintButtons();
 
     try {
-        const response = await fetch('/math/api/generate', {
+        const response = await fetch('/api/math/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt: prompt })
