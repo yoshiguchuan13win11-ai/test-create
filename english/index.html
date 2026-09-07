@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja"> 
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- タイトル変えるときはここ↓ -->
+        <title>英語テスト作成ツール</title>
+        <link rel="stylesheet" href="index.css">
+        <!-- CSSの先を変えるときはここ↑ -->
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    </head>
+    <body>
+        <header class="header">
+            <!-- ヘッダー --><!-- index.htmlに飛ぶリンク↓ -->
+            <a class="title" href="../index.html">ホーム</a>
+            <ul>
+                <li><a class="math" href="../math/index.html">数学テスト作成</a></li>
+                <li><a class="japanese" href="../japanese/index.html">国語テスト作成</a></li>
+                <li><a class="english" href="index.html">英語テスト作成</a></li>
+            </ul>
+        </header>
+        
+        <form class="test-form">
+            <h3>テストのタイトルを入力してください。</h3>
+                <input type="text" name="test-title" placeholder="テストタイトル" required>
+            <h3>対象年齢を入力してください。</h3>
+                <select name="test-age" required>
+                    <option value="">選択してください</option>
+                    <optgroup label="小学生">
+                    <option value="小学校1年生">小学校1年生</option>
+                        <option value="小学校2年生">小学校2年生</option>
+                        <option value="小学校3年生">小学校3年生</option>
+                        <option value="小学校4年生">小学校4年生</option>
+                        <option value="小学校5年生">小学校5年生</option>
+                        <option value="小学校6年生">小学校6年生</option>
+                    </optgroup>
+                    <optgroup label="中学生">
+                        <option value="中学1年生">中学1年生</option>
+                        <option value="中学2年生">中学2年生</option>
+                        <option value="中学3年生">中学3年生</option>
+                    </optgroup>
+                    <optgroup label="高校生">
+                        <option value="高校1年生">高校1年生</option>
+                        <option value="高校2年生">高校2年生</option>
+                        <option value="高校3年生">高校3年生</option>
+                    </optgroup>
+                </select>
+            <h3>出題範囲</h3>
+            <fieldset>
+                <label>
+                    <input type="checkbox" name="unit" value="program1"> PROGRAM1
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="program2"> PROGRAM2
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="program3"> PROGRAM3
+                </label>
+                <label>
+                    <input type="checkbox" name="unit" value="program4"> PROGRAM4
+                </label>
+            </fieldset>
+  
+            <h3>出題形式を選択してください。（複数可）</h3>
+            <fieldset>
+                <label>
+                    <input type="checkbox" name="question-type" value="word"> 単語
+                </label>
+                <label>
+                    <input type="checkbox" name="question-type" value="sort"> 並び替え
+                </label>
+                <label>
+                    <input type="checkbox" name="question-type" value="anaume"> 穴埋め
+                </label>
+                <label>
+                    <input type="checkbox" name="question-type" value="kakikae"> 英文書きかえ
+                </label>
+                <label>
+                    <input type="checkbox" name="question-type" value="create"> 作文
+                </label>
+                <label>
+                    <input type="checkbox" name="question-type" value="narikiri"> 人物になったつもりで
+                </label>
+            </fieldset>
+
+            <h3>問題数を入力してください。</h3>
+            <input type="number" name="question-count" min="1">
+
+            <h3>追加指示を入力してください。（任意）</h3>
+            <textarea name="additional-instructions" placeholder="追加指示を入力してください" rows="9"></textarea>
+        </form>
+        <button type="button" id="generate-btn">テストを作成する</button>
+        <div class="print-buttons">
+            <button type="button" id="print-question-btn" style="display:none;">問題用紙を印刷</button>
+            <button type="button" id="print-answersheet-btn" style="display:none;">解答用紙を印刷</button>
+            <button type="button" id="print-answerkey-btn" style="display:none;">模範解答を印刷</button>
+        </div>
+        <div id="result-area"></div>
+        <script src="index.js"></script>
+    </body>
+</html>

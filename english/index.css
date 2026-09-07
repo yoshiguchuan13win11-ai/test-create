@@ -1,0 +1,180 @@
+/*ホーム*/
+.title {
+    color:rgb(0, 0, 0);
+    font-size: 30px;
+    text-decoration: none;
+    margin-right: 25px;
+}
+/*マウス近づける*/
+.title:hover {
+    color: #555;
+    font-size: 30.1px;
+    text-decoration: none;
+}
+/*点消す*/
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+/*数学*/
+.math {
+    color:rgb(0, 0, 0);
+    margin-right: 15px;
+    font-size: 18px;
+    text-decoration: none;
+}
+.math:hover {
+    color: #555;
+    font-size: 18.1px;
+}
+
+/*国語*/
+.japanese {
+    color:rgb(0, 0, 0);
+    margin-right: 15px;
+    font-size: 18px;
+    text-decoration: none;
+}
+.japanese:hover {
+    color: #555;
+    font-size: 18.1px;
+}
+/*ヘッダー*/
+.header {
+    display: flex;
+    align-items: center;
+    border-bottom: 3px solid #000000;
+}
+body {
+    padding: 0 20px;
+}
+h3 {
+    font-weight: normal;
+}
+.red {
+    color: red;
+}
+textarea {
+    width: 100%;
+}
+#generate-btn {
+    display: block;
+}
+.paper {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    line-height: 1.8;
+}
+
+.paper-title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.student-info {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+/* 指示文(大問の代わりに、テスト全体で1つだけ表示) */
+.instruction-text {
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+    margin: 24px 0 16px;
+    padding-bottom: 8px;
+    line-height: 1.6;
+}
+
+/* 各問題(①②③…)を大問を挟まず並べる */
+.kanji-question {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.kanji-number {
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.kanji-sentence {
+    flex-grow: 1;
+}
+
+/* 下線を引く対象の部分 */
+.underline-target {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.answer-blank {
+    border-bottom: 1px solid #999;
+    height: 20px;
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.answer-blank-large {
+    height: 40px;
+}
+
+.answer-key-text {
+    color: #1a4d8f;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.ai-footer {
+    margin-top: 30px;
+    font-size: 10px;
+    color: #888;
+    text-align: center;
+    border-top: 1px solid #ccc;
+    padding-top: 6px;
+}
+
+.print-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+@media print {
+    .header,
+    .test-form,
+    #generate-btn,
+    .print-buttons {
+        display: none;
+    }
+
+    .paper {
+        border: none;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+
+    .ai-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+}
