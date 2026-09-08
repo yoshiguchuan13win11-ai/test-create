@@ -79,6 +79,15 @@ numberには1から始まる連番を入れてください。`;
 // 各ページ下部に付ける注意書き
 const FOOTER_HTML = `<div class="ai-footer">このテストはAI作成です。実際のテストではありません。このテストは https://test-create-theta.vercel.app/ で無料で生成できます。</div>`;
 
+// 問題の種類に応じて、解答欄のクラス名を決める
+function getBlankClass(questionType) {
+    const longAnswerTypes = ["kakikae", "create", "narikiri"];
+    if (longAnswerTypes.indexOf(questionType) !== -1) {
+        return "answer-blank answer-blank-large";
+    }
+    return "answer-blank";
+}
+
 // 共通のヘッダー部分(タイトル・氏名欄)
 function renderPaperHead(worksheet, showScoreTable) {
     let html = `<div class="paper-title">${worksheet.title || ""}</div>`;
@@ -100,7 +109,7 @@ function renderQuestionPaper(worksheet) {
         html += `<div class="kanji-question">
             <span class="kanji-number">${q.number}</span>
             <span class="kanji-sentence">${q.prompt}</span>
-            <div class="answer-blank"></div>
+            <div class="${getBlankClass(q.questionType)}"></div>
         </div>`;
     });
 
@@ -118,7 +127,7 @@ function renderAnswerSheet(worksheet) {
     worksheet.questions.forEach(function(q) {
         html += `<div class="kanji-question">
             <span class="kanji-number">${q.number}</span>
-            <div class="answer-blank answer-blank-large"></div>
+            <div class="${getBlankClass(q.questionType)}"></div>
         </div>`;
     });
 
