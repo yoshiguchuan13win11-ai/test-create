@@ -100,8 +100,8 @@ function renderQuestionPaper(worksheet) {
         html += `<div class="kanji-question">
             <span class="kanji-number">${q.number}</span>
             <span class="kanji-sentence">${q.prompt}</span>
-        </div>
-        <div class="answer-blank"></div>`;
+            <div class="answer-blank"></div>
+        </div>`;
     });
 
     html += FOOTER_HTML;
@@ -118,8 +118,8 @@ function renderAnswerSheet(worksheet) {
     worksheet.questions.forEach(function(q) {
         html += `<div class="kanji-question">
             <span class="kanji-number">${q.number}</span>
-        </div>
-        <div class="answer-blank answer-blank-large"></div>`;
+            <div class="answer-blank answer-blank-large"></div>
+        </div>`;
     });
 
     html += FOOTER_HTML;
@@ -137,8 +137,8 @@ function renderAnswerKey(worksheet) {
         html += `<div class="kanji-question">
             <span class="kanji-number">${q.number}</span>
             <span class="kanji-sentence">${q.prompt}</span>
-        </div>
-        <div class="answer-key-text">解答：${q.answer}</div>`;
+            <span class="answer-key-text">${q.answer}</span>
+        </div>`;
     });
 
     html += FOOTER_HTML;
