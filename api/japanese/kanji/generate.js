@@ -2,7 +2,7 @@ import modelListData from '../../model-list.json' with { type: 'json' };
 
 const MODEL_FALLBACK_LIST = modelListData.fallbackList;
 
-const KANJI_SCHEMA = {
+const WORKSHEET_SCHEMA = {
   type: 'OBJECT',
   properties: {
     title: { type: 'STRING' },
