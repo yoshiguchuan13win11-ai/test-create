@@ -78,7 +78,7 @@ export default async function handler(req, res) {
   }
 
 try {
-    const result = await callGemini(prompt, ENGLISH_SCHEMA, apiKey);
+    const result = await callGemini(prompt, WORKSHEET_SCHEMA, apiKey);
     return res.status(200).json({ ...result.worksheet, usedModel: result.usedModel });
 } catch (err) {
     return res.status(500).json({ error: '生成中にエラーが発生しました: ' + err.message });
