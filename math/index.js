@@ -291,6 +291,7 @@ generateBtn.addEventListener('click', async function() {
         currentWorksheet = data;
         modelInfo.textContent = `使用モデル: ${data.usedModel}`;
         resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
+        renderMath();
         printQuestionBtn.style.display = "inline-block";
         printAnswerSheetBtn.style.display = "inline-block";
         printAnswerKeyBtn.style.display = "inline-block";
@@ -302,17 +303,23 @@ generateBtn.addEventListener('click', async function() {
 printQuestionBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
     renderMath();
-    window.print();
+    setTimeout(function() {
+        window.print();
+    }, 200);
 });
 
 printAnswerSheetBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderAnswerSheet(currentWorksheet);
     renderMath();
-    window.print();
+    setTimeout(function() {
+        window.print();
+    }, 200);
 });
 
 printAnswerKeyBtn.addEventListener('click', function() {
     resultArea.innerHTML = renderAnswerKey(currentWorksheet);
     renderMath();
-    window.print();
+    setTimeout(function() {
+        window.print();
+    }, 200);
 });
