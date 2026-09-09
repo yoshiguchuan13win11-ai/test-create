@@ -106,9 +106,9 @@ function renderQuestionPaper(worksheet) {
     html += `<div class="instruction-text">${worksheet.instruction || ""}</div>`;
 
     worksheet.questions.forEach(function(q) {
-        html += `<div class="kanji-question">
-            <span class="kanji-number">${q.number}</span>
-            <span class="kanji-sentence">${q.prompt}</span>
+        html += `<div class="english-question">
+            <span class="english-number">${q.number}</span>
+            <span class="english-sentence">${q.prompt}</span>
             <div class="${getBlankClass(q.questionType)}"></div>
         </div>`;
     });
@@ -125,8 +125,8 @@ function renderAnswerSheet(worksheet) {
     html += `<div class="instruction-text">${worksheet.instruction || ""}</div>`;
 
     worksheet.questions.forEach(function(q) {
-        html += `<div class="kanji-question">
-            <span class="kanji-number">${q.number}</span>
+        html += `<div class="english-question">
+            <span class="english-number">${q.number}</span>
             <div class="${getBlankClass(q.questionType)}"></div>
         </div>`;
     });
@@ -143,9 +143,9 @@ function renderAnswerKey(worksheet) {
     html += `<div class="instruction-text">${worksheet.instruction || ""}</div>`;
 
     worksheet.questions.forEach(function(q) {
-        html += `<div class="kanji-question">
-            <span class="kanji-number">${q.number}</span>
-            <span class="kanji-sentence">${q.prompt}</span>
+        html += `<div class="english-question">
+            <span class="english-number">${q.number}</span>
+            <span class="english-sentence">${q.prompt}</span>
             <span class="answer-key-text">${q.answer}</span>
         </div>`;
     });

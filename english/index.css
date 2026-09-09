@@ -1,52 +1,3 @@
-/*ホーム*/
-.title {
-    color:rgb(0, 0, 0);
-    font-size: 30px;
-    text-decoration: none;
-    margin-right: 25px;
-}
-/*マウス近づける*/
-.title:hover {
-    color: #555;
-    font-size: 30.1px;
-    text-decoration: none;
-}
-/*点消す*/
-ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-}
-/*数学*/
-.math {
-    color:rgb(0, 0, 0);
-    margin-right: 15px;
-    font-size: 18px;
-    text-decoration: none;
-}
-.math:hover {
-    color: #555;
-    font-size: 18.1px;
-}
-
-/*国語*/
-.japanese {
-    color:rgb(0, 0, 0);
-    margin-right: 15px;
-    font-size: 18px;
-    text-decoration: none;
-}
-.japanese:hover {
-    color: #555;
-    font-size: 18.1px;
-}
-/*ヘッダー*/
-.header {
-    display: flex;
-    align-items: center;
-    border-bottom: 3px solid #000000;
-}
 body {
     padding: 0 20px;
 }
@@ -96,19 +47,19 @@ textarea {
 }
 
 /* 各問題(①②③…)を大問を挟まず並べる */
-.kanji-question {
+.english-question {
     display: flex;
     align-items: baseline;
     gap: 8px;
     margin-bottom: 14px;
 }
 
-.kanji-number {
+.english-number {
     font-weight: bold;
     flex-shrink: 0;
 }
 
-.kanji-sentence {
+.english-sentence {
     flex-grow: 1;
 }
 
