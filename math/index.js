@@ -254,6 +254,7 @@ const resultArea = document.getElementById('result-area');
 const printQuestionBtn = document.getElementById('print-question-btn');
 const printAnswerSheetBtn = document.getElementById('print-answersheet-btn');
 const printAnswerKeyBtn = document.getElementById('print-answerkey-btn');
+const modelInfo = document.getElementById('model-info');
 
 let currentWorksheet = null; // 生成結果を保存しておく変数
 
@@ -288,8 +289,8 @@ generateBtn.addEventListener('click', async function() {
         }
 
         currentWorksheet = data;
+        modelInfo.textContent = `使用モデル: ${data.usedModel}`;
         resultArea.innerHTML = renderQuestionPaper(currentWorksheet);
-        renderMath();
         printQuestionBtn.style.display = "inline-block";
         printAnswerSheetBtn.style.display = "inline-block";
         printAnswerKeyBtn.style.display = "inline-block";
