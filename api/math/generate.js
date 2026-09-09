@@ -104,3 +104,4 @@ try {
 } catch (err) {
     return res.status(500).json({ error: '生成中にエラーが発生しました: ' + err.message });
 }
+}
