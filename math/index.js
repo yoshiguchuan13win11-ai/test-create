@@ -99,11 +99,20 @@ ${NOTATION_RULES}
 - instructionには大問全体の指示文、subQuestionsの各labelには"(1)"のような番号、textには問題文だけを入れてください`;
 
 const ageSelect = document.querySelector('select[name="test-age"]');
-const topicInput = document.querySelector('input[name="topic"]');
+const unitCheckboxes = document.querySelectorAll('input[name="question"]');
+
+function getSelectedUnits() {
+    const checked = Array.from(unitCheckboxes).filter(function(cb) {
+        return cb.checked;
+    });
+    return checked.map(function(cb) {
+        return cb.nextSibling.textContent.trim();
+    }).join("、");
+}
 
 function buildMathPrompt() {
     let finalPrompt = mathTemplate.replaceAll("{{学年}}", ageSelect.value);
-    finalPrompt = finalPrompt.replaceAll("{{単元名}}", topicInput.value);
+    finalPrompt = finalPrompt.replaceAll("{{単元名}}", getSelectedUnits());
     return finalPrompt;
 }
 
@@ -124,7 +133,7 @@ function getSelectedQuestionTypes() {
 }
 
 function buildFreePrompt() {
-    let prompt = `${ageSelect.value}「${topicInput.value}」の数学のテストを作成してください。
+    let prompt = `${ageSelect.value}「${getSelectedUnits()}」の数学のテストを作成してください。
 問題数は${questionCount.value}問、難易度は${difficultySelect.value}にしてください。
 出題形式は${getSelectedQuestionTypes()}を含めてください。
 ${NOTATION_RULES}
@@ -141,7 +150,7 @@ instructionには大問全体の指示文、subQuestionsの各labelには"(1)"�
 }
 
 // 各ページ下部に付ける注意書き
-const FOOTER_HTML = `<div class="ai-footer">このテストはAI作成です。実際のテストではありません。このテストは https://test-create-theta.vercel.app/ で無料で生成できます。</div>`;
+const FOOTER_HTML = `<div class="ai-footer">AI作成 - 予想テスト</div>`;
 
 // 共通のヘッダー部分(タイトル・配点・氏名欄)
 function renderPaperHead(worksheet) {
@@ -265,6 +274,11 @@ function hideAllPrintButtons() {
 }
 
 generateBtn.addEventListener('click', async function() {
+    if (getSelectedUnits() === "") {
+        resultArea.innerHTML = "<p>出題範囲を1つ以上選択してください。</p>";
+        return;
+    }
+
     let prompt;
     if (yesRadio.checked) {
         prompt = buildMathPrompt();

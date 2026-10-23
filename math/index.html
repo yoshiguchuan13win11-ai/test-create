@@ -49,15 +49,27 @@
                         <option value="高校3年生">高校3年生</option>
                     </optgroup>
                 </select>
-            <h3>出題範囲（入力可）</h3>
-                <input type="text" name="topic" list="topic-list" placeholder="出題範囲・テーマ" required>
-                <datalist id="topic-list">
-                    <option value="文字式"></option>
-                    <option value="一次方程式(比例除く)"></option>
-                    <option value="一次方程式"></option>
-                    <option value="文字式+一次方程式（比例除く）"></option>
-                    <option value="文字式＋一次方程式"></option>
-                </datalist>
+            <h3>出題範囲（複数可）</h3>
+            <fieldset>
+                <label>
+                    <input type="checkbox" name="question" value="seifu"> 正負の数
+                </label>
+                <label>
+                    <input type="checkbox" name="question" value="moji"> 文字式
+                </label>
+                <label>
+                    <input type="checkbox" name="question" value="houtei"> 方程式
+                </label>
+                <label>
+                    <input type="checkbox" name="question" value="hihan"> 比例・反比例
+                </label>
+                <label>
+                    <input type="checkbox" name="question" value="hihan_gurafu"> 比例・反比例のグラフ
+                </label>
+                <label>
+                    <input type="checkbox" name="question" value="hihan_riyou"> 比例・反比例の利用
+                </label>
+            </fieldset>
             <h3>数学テンプレートを使用しますか？</h3>
             <label>
                 <input type="radio" name="use-template" value="yes" required> はい
