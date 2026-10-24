@@ -34,6 +34,19 @@ const WORKSHEET_SCHEMA = {
                   }
                 }
               },
+                graph: {
+                  type: 'OBJECT',
+                  properties: {
+                    kind:    { type: 'STRING' },
+                    task:    { type: 'STRING' },
+                    a:       { type: 'NUMBER' },
+                    xRange:  { type: 'ARRAY', items: { type: 'NUMBER' } },
+                    yRange:  { type: 'ARRAY', items: { type: 'NUMBER' } },
+                    pointXs: { type: 'ARRAY', items: { type: 'NUMBER' } }
+                  },
+                  required: ['kind', 'task', 'a', 'xRange', 'yRange', 'pointXs']
+                }
+              },
               required: ['number', 'instruction', 'subQuestions']
             }
           }

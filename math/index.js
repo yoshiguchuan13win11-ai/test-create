@@ -54,7 +54,8 @@ const NOTATION_RULES = `
 急激な難易度上昇を避け、各大問・各パートの中で段階的に難しくなるようにしてください。
 
 【出題形式の制約について・重要】
-図、グラフ、表、数直線、カレンダー、図形など、視覚的な図表を前提とする問題は出題しないでください（このツールはテキストのみで問題を生成するため、図が必要な問題は成立しません）。
+表、数直線、カレンダー、図形など、視覚的な図表を前提とする問題は出題しないでください（このツールはテキストのみで問題を生成するため、図が必要な問題は成立しません）。
+グラフ問題は、出題範囲に「比例・反比例のグラフ」が含まれる場合にのみ出題してください。グラフ問題を出題するときは、その大問のgraphフィールドに kind("proportion"または"inverse")・task("draw"または"read")・a(比例定数)・xRange・yRange・pointXs(曲線上に示すx座標の配列)をセットしてください。taskは「グラフを書かせる問題」ならdraw、「グラフを読み取らせる問題」ならreadです。グラフフィールドを持たない大問にはgraphを含めないでください。
 文章題は、文章だけで状況が正確に伝わるように書いてください。
 
 【レイアウトについて・重要】
@@ -113,6 +114,12 @@ function getSelectedUnits() {
 function buildMathPrompt() {
     let finalPrompt = mathTemplate.replaceAll("{{学年}}", ageSelect.value);
     finalPrompt = finalPrompt.replaceAll("{{単元名}}", getSelectedUnits());
+    const hasGraph = Array.from(unitCheckboxes).some(function(cb) {
+        return cb.checked && cb.value === "hihan_gurafu";
+    });
+    if (!hasGraph) {
+        finalPrompt += "\n【追加制約】出題範囲にグラフは含まれていません。graphフィールドを持つ大問は一切出さないでください。";
+    }
     return finalPrompt;
 }
 
@@ -169,6 +176,7 @@ function renderPaperHead(worksheet) {
 
 // 問題用紙(配点は表示、解答欄は空欄、模範解答は含めない)
 function renderQuestionPaper(worksheet) {
+    graphMode = "question";
     let html = `<div class="paper">`;
     html += renderPaperHead(worksheet);
 
@@ -176,7 +184,7 @@ function renderQuestionPaper(worksheet) {
         html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
         part.questions.forEach(function(q) {
             html += `<div class="daimon">`;
-            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>${renderGraph(q, graphMode)}`;
             (q.subQuestions || []).forEach(function(sq) {
                 html += `<div class="subquestion">
                     <span class="sub-label">${sq.label}</span>
@@ -196,6 +204,7 @@ function renderQuestionPaper(worksheet) {
 
 // 解答用紙(問題文は省略し、配点と解答欄だけを大きく取る)
 function renderAnswerSheet(worksheet) {
+    graphMode = "sheet";
     let html = `<div class="paper">`;
     html += renderPaperHead(worksheet);
 
@@ -203,7 +212,7 @@ function renderAnswerSheet(worksheet) {
         html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
         part.questions.forEach(function(q) {
             html += `<div class="daimon">`;
-            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span></div>`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span></div>${renderGraph(q, graphMode)}`;
             (q.subQuestions || []).forEach(function(sq) {
                 html += `<div class="subquestion">
                     <span class="sub-label">${sq.label}</span>
@@ -222,6 +231,7 @@ function renderAnswerSheet(worksheet) {
 
 // 模範解答(問題文・答えの両方を表示)
 function renderAnswerKey(worksheet) {
+    graphMode = "key";
     let html = `<div class="paper">`;
     html += `<div class="paper-title">${worksheet.title || ""}（模範解答）</div>`;
 
@@ -229,7 +239,7 @@ function renderAnswerKey(worksheet) {
         html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
         part.questions.forEach(function(q) {
             html += `<div class="daimon">`;
-            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>${renderGraph(q, graphMode)}`;
             (q.subQuestions || []).forEach(function(sq) {
                 html += `<div class="subquestion">
                     <span class="sub-label">${sq.label}</span>
@@ -245,6 +255,103 @@ function renderAnswerKey(worksheet) {
     html += FOOTER_HTML;
     html += `</div>`;
     return html;
+}
+
+// ===== グラフ描画(SVG) =====
+let graphMode = "question"; // いま作っている用紙: question / sheet / key
+let graphIdCounter = 0;     // clipPathのidが重ならないための通し番号
+
+// 比例・反比例のグラフをSVG文字列にして返す
+function drawGraphSvg(g, showCurve, color) {
+    const xMin = Number(g.xRange[0]);
+    const xMax = Number(g.xRange[1]);
+    const yMin = Number(g.yRange[0]);
+    const yMax = Number(g.yRange[1]);
+    const a = Number(g.a);
+
+    // 範囲がおかしいときは描かない(0が範囲内にないと軸が引けない)
+    if (isNaN(xMin) || isNaN(xMax) || isNaN(yMin) || isNaN(yMax) || isNaN(a)) return "";
+    if (!(xMin < 0 && xMax > 0 && yMin < 0 && yMax > 0)) return "";
+
+    const unit = Math.floor(360 / Math.max(xMax - xMin, yMax - yMin)); // 1目盛りのpx
+    const margin = 24;
+    const width = (xMax - xMin) * unit + margin * 2;
+    const height = (yMax - yMin) * unit + margin * 2;
+
+    // 数学の座標 → SVGの座標
+    function toPx(x) { return margin + (x - xMin) * unit; }
+    function toPy(y) { return margin + (yMax - y) * unit; }
+
+    let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+    const labelStep = unit >= 16 ? 1 : 2; // 目盛りが細かいときは数字を1つおきにする
+
+    // たて線(x = 整数)と、x軸の数字
+    for (let i = Math.ceil(xMin); i <= Math.floor(xMax); i++) {
+        const isAxis = (i === 0);
+        svg += `<line x1="${toPx(i)}" y1="${toPy(yMax)}" x2="${toPx(i)}" y2="${toPy(yMin)}" stroke="${isAxis ? "#000" : "#ccc"}" stroke-width="${isAxis ? 1.5 : 1}"/>`;
+        if (!isAxis && i % labelStep === 0) {
+            svg += `<text x="${toPx(i)}" y="${toPy(0) + 14}" font-size="11" text-anchor="middle">${i}</text>`;
+        }
+    }
+    // よこ線(y = 整数)と、y軸の数字
+    for (let i = Math.ceil(yMin); i <= Math.floor(yMax); i++) {
+        const isAxis = (i === 0);
+        svg += `<line x1="${toPx(xMin)}" y1="${toPy(i)}" x2="${toPx(xMax)}" y2="${toPy(i)}" stroke="${isAxis ? "#000" : "#ccc"}" stroke-width="${isAxis ? 1.5 : 1}"/>`;
+        if (!isAxis && i % labelStep === 0) {
+            svg += `<text x="${toPx(0) - 6}" y="${toPy(i) + 4}" font-size="11" text-anchor="end">${i}</text>`;
+        }
+    }
+    // 原点Oと軸の名前
+    svg += `<text x="${toPx(0) - 6}" y="${toPy(0) + 14}" font-size="11" text-anchor="end">O</text>`;
+    svg += `<text x="${toPx(xMax) + 6}" y="${toPy(0) + 4}" font-size="12">x</text>`;
+    svg += `<text x="${toPx(0) + 6}" y="${toPy(yMax) - 8}" font-size="12">y</text>`;
+
+    if (showCurve) {
+        // 枠の外にはみ出した部分を切り取る範囲
+        const clipId = "graph-clip-" + (graphIdCounter++);
+        svg += `<clipPath id="${clipId}"><rect x="${toPx(xMin)}" y="${toPy(yMax)}" width="${(xMax - xMin) * unit}" height="${(yMax - yMin) * unit}"/></clipPath>`;
+
+        let d = "";
+        if (g.kind === "proportion") {
+            // 比例: 直線なので、両端の2点を結ぶだけ
+            d = `M ${toPx(xMin)} ${toPy(a * xMin)} L ${toPx(xMax)} ${toPy(a * xMax)}`;
+        } else {
+            // 反比例: x<0 と x>0 を別々の線にする(x=0は通らない)
+            const step = 0.05;
+            const branches = [[xMin, -step], [step, xMax]];
+            branches.forEach(function(br) {
+                const n = Math.round((br[1] - br[0]) / step);
+                for (let i = 0; i <= n; i++) {
+                    const x = br[0] + i * step;
+                    d += (i === 0 ? "M " : "L ") + toPx(x) + " " + toPy(a / x) + " ";
+                }
+            });
+        }
+        svg += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2" clip-path="url(#${clipId})"/>`;
+
+        // 曲線上の点(yはJSで計算する)
+        (g.pointXs || []).forEach(function(xv) {
+            const x = Number(xv);
+            const y = (g.kind === "proportion") ? a * x : a / x;
+            if (x >= xMin && x <= xMax && y >= yMin && y <= yMax) {
+                svg += `<circle cx="${toPx(x)}" cy="${toPy(y)}" r="3.5" fill="${color}"/>`;
+            }
+        });
+    }
+
+    svg += `</svg>`;
+    return svg;
+}
+
+// 大問qにグラフがあれば、用紙の種類(mode)に合わせたHTMLを返す
+function renderGraph(q, mode) {
+    const g = q.graph;
+    if (!g) return "";
+    if (g.task === "read" && mode === "sheet") return ""; // 読み取り問題は解答用紙に不要
+    const showCurve = (g.task === "read") || (mode === "key");
+    const color = (mode === "key") ? "#1a4d8f" : "#000";
+    const svg = drawGraphSvg(g, showCurve, color);
+    return svg === "" ? "" : `<div class="graph-wrap">${svg}</div>`;
 }
 
 // 数式(KaTeX)をresultArea内でレンダリングする
