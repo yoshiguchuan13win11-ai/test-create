@@ -120,6 +120,7 @@ function buildMathPrompt() {
     if (!hasGraph) {
         finalPrompt += "\n【追加制約】出題範囲にグラフは含まれていません。graphフィールドを持つ大問は一切出さないでください。";
     }
+    finalPrompt += `\n【出題範囲の厳守・最重要】このテストで出題してよい内容は「${getSelectedUnits()}」だけです。それ以外の単元は、グラフの前提知識であっても一切出題しないでください。`;
     return finalPrompt;
 }
 
