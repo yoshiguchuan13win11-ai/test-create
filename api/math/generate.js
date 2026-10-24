@@ -32,8 +32,7 @@ const WORKSHEET_SCHEMA = {
                     },
                     required: ['label', 'text', 'points', 'answer']
                   }
-                }
-              },
+                },
                 graph: {
                   type: 'OBJECT',
                   properties: {
@@ -48,7 +47,6 @@ const WORKSHEET_SCHEMA = {
                 }
               },
               required: ['number', 'instruction', 'subQuestions']
-            }
           }
         },
         required: ['partTitle', 'partPoints', 'questions']
