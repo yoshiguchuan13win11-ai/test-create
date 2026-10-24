@@ -47,6 +47,7 @@ const WORKSHEET_SCHEMA = {
                 }
               },
               required: ['number', 'instruction', 'subQuestions']
+            }
           }
         },
         required: ['partTitle', 'partPoints', 'questions']
@@ -109,10 +110,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'プロンプト(prompt)が正しく送られていません' });
   }
 
-try {
+  try {
     const result = await callGemini(prompt, WORKSHEET_SCHEMA, apiKey);
     return res.status(200).json({ ...result.worksheet, usedModel: result.usedModel });
-} catch (err) {
+  } catch (err) {
     return res.status(500).json({ error: '生成中にエラーが発生しました: ' + err.message });
-}
+  }
 }
