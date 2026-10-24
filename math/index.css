@@ -107,6 +107,23 @@ textarea {
     padding-top: 6px;
 }
 
+.graph-wrap {
+    margin: 8px 0 8px 20px;
+    break-inside: avoid;
+}
+
+@media print {
+    .ai-footer {
+        position: static;
+    }
+}
+
+@media print {
+    .ai-footer {
+        position: static;
+    }
+}
+
 .print-buttons {
     display: flex;
     gap: 10px;
@@ -117,7 +134,8 @@ textarea {
     .header,
     .test-form,
     #generate-btn,
-    .print-buttons {
+    .print-buttons,
+    #model-info {
         display: none;
     }
 

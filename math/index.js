@@ -184,7 +184,7 @@ function renderQuestionPaper(worksheet) {
         html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
         part.questions.forEach(function(q) {
             html += `<div class="daimon">`;
-            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>${renderGraph(q, graphMode)}`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>${renderGraph(q, "question")}`;
             (q.subQuestions || []).forEach(function(sq) {
                 html += `<div class="subquestion">
                     <span class="sub-label">${sq.label}</span>
@@ -212,7 +212,7 @@ function renderAnswerSheet(worksheet) {
         html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
         part.questions.forEach(function(q) {
             html += `<div class="daimon">`;
-            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span></div>${renderGraph(q, graphMode)}`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span></div>${renderGraph(q, "sheet")}`;
             (q.subQuestions || []).forEach(function(sq) {
                 html += `<div class="subquestion">
                     <span class="sub-label">${sq.label}</span>
@@ -239,7 +239,7 @@ function renderAnswerKey(worksheet) {
         html += `<div class="part-title">${part.partTitle}（${part.partPoints}点）</div>`;
         part.questions.forEach(function(q) {
             html += `<div class="daimon">`;
-            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>${renderGraph(q, graphMode)}`;
+            html += `<div class="daimon-head"><span class="daimon-number">${q.number}</span>${q.instruction}</div>${renderGraph(q, "key")}`;
             (q.subQuestions || []).forEach(function(sq) {
                 html += `<div class="subquestion">
                     <span class="sub-label">${sq.label}</span>
